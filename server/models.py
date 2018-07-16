@@ -46,12 +46,20 @@ class Users(AbstractBaseUser):
 
 
 class Activity(models.Model):
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=20, unique=True)
     datetime = models.CharField(max_length=20)
     location = models.CharField(max_length=20)
-    activity_id = models.CharField(max_length=20)
     activity_info = models.TextField()
+    activity_points = models.TextField()
     partners = models.ManyToManyField(Users)
 
     def __str__(self):
-        return self.activity_id
+        return self.title
+
+
+class ActivityDetails(models.Model):
+    stu_id = models.CharField(max_length=15)
+    title = models.CharField(max_length=15)
+    points = models.TextField()
+    details = models.TextField()
+

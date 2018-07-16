@@ -20,8 +20,13 @@ from server.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', user_login),
-    path('register/', user_register),
-    path('logout/', user_logout),
-
+    path('user/login/', user_login),
+    path('user/register/', user_register),
+    path('user/logout/', user_logout),
+    path('user/query/', user_query),
+    path('user/activities/', user_activity_list),
+    path('activity/create/', activity_add),
+    path('activity/part/', activity_part),
+    path('activity/query/', activity_query),
+    path('activity/list/', activity_list),
 ]
