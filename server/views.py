@@ -7,20 +7,35 @@ import json
 
 # 用户登录调用函数
 def user_login(request):
+    msg = {
+        "code": 0,
+        "message": ""
+    }
     stu_id = request.GET.get("stu_id")
     password = request.GET.get("password")
     user = authenticate(request, username=stu_id, password=password)
     if user is not None:
         login(request, user)
-        return HttpResponse("Login Success !\n" + str(stu_id))
+        msg["code"] = 1
+        msg["message"] = "Login Success !"
     else:
-        return HttpResponse("Login Failed !")
+        msg["code"] = 0
+        msg["message"] = "Login Failed !"
+    return HttpResponse(
+        json.dumps(msg)
+    )
 
 
 # 用户注销调用函数
 def user_logout(request):
     logout(request)
-    return HttpResponse("Logout Success !")
+    msg = {
+        "code": 1,
+        "message": "Logged Out !"
+    }
+    return HttpResponse(
+        json.dumps(msg)
+    )
 
 
 # 用户注册调用函数
@@ -29,25 +44,50 @@ def user_register(request):
     password = request.GET.get("password")
     name = request.GET.get("name")
     user_info = request.GET.get("user_info")
+    msg = {
+        "code": 0,
+        "message": ""
+    }
     try:
         user = Users.objects.create_user(stu_id=stu_id, password=password)
     except:
-        return HttpResponse("Failed to register !")
+        msg["code"] = 0
+        msg["message"] = "Failed to register !"
+        return HttpResponse(
+            json.dumps(msg)
+        )
     user.name = name
     user.user_info = user_info
     user.save()
-    return HttpResponse("Register Success !")
+    msg["code"] = 1
+    msg["message"] = "Register Success !"
+    return HttpResponse(
+        json.dumps(msg)
+    )
 
 
 # 更改用户信息调用函数
 def user_change_info(request):
+    msg = {
+        "code": 0,
+        "message": ""
+    }
     pass
 
 
 # 查询用户信息调用函数
 def user_query(request):
     stu_id = request.GET.get("stu_id")
-    user = Users.objects.get(stu_id=stu_id)
+    try:
+        user = Users.objects.get(stu_id=stu_id)
+    except:
+        msg = {
+            "code": 0,
+            "message": "Failed to query !"
+        }
+        return HttpResponse(
+            json.dumps(msg)
+        )
     user_info = {
         "stu_id": user.user_info,
         "name": user.name,
@@ -77,10 +117,25 @@ def activity_add(request):
     datetime = request.GET.get("datetime")
     location = request.GET.get("location")
     info = request.GET.get("info")
-    activity = Activity(title=title, datetime=datetime,
+    try:
+        activity = Activity(title=title, datetime=datetime,
                         location=location, activity_info=info)
+    except:
+        msg = {
+            "code": 0,
+            "message": "Failed to add new activity !"
+        }
+        return HttpResponse(
+            json.dumps(msg)
+        )
     activity.save()
-    return HttpResponse("Add new activity Success !\n" + str(title))
+    msg = {
+        "code": 1,
+        "message": "Add new activity Success !"
+    }
+    return HttpResponse(
+        json.dumps(msg)
+    )
 
 
 # 用户参与某个活动调用函数
@@ -90,7 +145,13 @@ def activity_part(request):
     user = Users.objects.get(stu_id=stu_id)
     activity = Activity.objects.get(title=title)
     activity.partners.add(user)
-    return HttpResponse("Participate Success !" + str(stu_id) + str(title))
+    msg = {
+        "code": 1,
+        "message": "Participate Success !"
+    }
+    return HttpResponse(
+        json.dumps(msg)
+    )
 
 
 # 查询某个活动详细信息的函数
